@@ -4,8 +4,8 @@
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
   import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-  
-
+  import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+  import { getAuth, onAuthStateChanged } from "firebase/auth";
   
   // Your web app's Firebase configuration
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -67,6 +67,43 @@
   }
 });
   })
+
+const auth = getAuth();
+
+// Function triggered by your login form submission
+function loginUser(email, password) {
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // SUCCESS: Password is correct
+      const user = userCredential.user;
+      window.location.href = "/dashboard.html"; // Redirect to protected page
+    })
+    .catch((error) => {
+      // FAILURE: Wrong password or email
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      
+      // Show an error message to the user on the screen
+      document.getElementById("error-message").innerText = "Invalid email or password.";
+      console.error(`Login failed: ${errorCode} - ${errorMessage}`);
+    });
+
+
+  const auth = getAuth();
+
+// Run this immediately when the protected page loads
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    // No user is signed in, or they typed the wrong password earlier
+    // Boot them back to the login page immediately
+    window.location.href = "/login.html"; 
+  } else {
+    // User is signed in securely. Load the page content.
+    console.log("Welcome back, ", user.email);
+  }
+});
+
+  
 
   
    
